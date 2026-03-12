@@ -12,21 +12,46 @@ metadata:
 
 # Hard rules
 
-- ソフトウェアを install する直前に、必ず `今から <名前> をインストールします。` と日本語で伝える。
+- ソフトや global skill を新しく入れる前、または更新する前は、必ず説明だけを先に送り、その場で止まって明確な承認を待つ。承認前に install command を実行してはならない。
+- install 前の説明は、毎回 1 つずつ、日本語で次を必ず含める。
+  - 何を install するのか
+  - 名前の読み方をカタカナで添える
+  - 何のために必要かを、やさしい言い方で説明する
+  - 受講者が押すボタンや、管理者権限の確認など、必要な操作を先に説明する
+  - 分からないことがあれば何でも聞いてよいと伝える
+  - 最後を `インストールしてもよいですか？` で終える
+- 難しい技術用語やカタカナ語はできるだけ避ける。避けにくい語は、すぐ後ろで短く説明する。
+- `今から <名前> をインストールします。` と言った直後に先へ進むのは禁止。説明を出したら一度止まり、承認が来るまで待つ。
 - すでに必要条件を満たしているソフトウェアは、再 install しない。
 - `npm` で install する package は常に latest を使う。
 - setup 中は題材決めや作品の実装に入らず、環境を整えることだけに集中する。
 - `vibescool setup` 実行後は、global の `vibescool-assignments` を開き、そのルールを優先して会話を続ける。
 
+# Install approval template
+
+- install 前の説明は、次の形を基本にする。
+
+```text
+今から `Node.js` （ノード）というソフトをインストールします。
+アプリを作るために必要な、無料のソフトです。
+管理者権限が必要なら、そのときは「はい」を押してください。
+なにか分からないことがあれば、何でも聞いてください。
+
+インストールしてもよいですか？
+```
+
+- 実際の名前と説明は、その都度対象に合わせて言い換える。
+- 返事が来るまでは待つ。承認がないまま次の install や次の作業へ進まない。
+
 # Workflow
 
 1. 現在の `cwd` を作業ルートとして確認する。
 2. `node --version` と `npm --version` を確認する。
-3. `Node.js` または `npm` が不足している場合は、install 前に何を入れるか説明してから対応する。自動 install が難しい環境なら、不足内容と次の操作を短く伝えて止まる。
-4. `vibescool --version` を確認し、必要なら説明してから `npm install -g vibescool-cli@latest` を実行する。
-5. `agent-browser --version` を確認し、必要なら説明してから `npm install -g agent-browser@latest` を実行する。
-6. `vibescool-assignments` が global で使える状態か確認する。無ければ、https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments を使って global に追加する。
-7. `session-retrospective` が global で使える状態か確認する。無ければ、https://github.com/teramotodaiki/vibescool-skills/tree/main/session-retrospective を使って global に追加する。
+3. `Node.js` または `npm` が不足している場合は、上の approval template に沿って説明し、承認を待ってから対応する。自動 install が難しい環境なら、不足内容と次の操作をやさしく伝えて止まる。
+4. `vibescool --version` を確認し、必要なら上の approval template に沿って説明し、承認を待ってから `npm install -g vibescool-cli@latest` を実行する。
+5. `agent-browser --version` を確認し、必要なら上の approval template に沿って説明し、承認を待ってから `npm install -g agent-browser@latest` を実行する。
+6. `vibescool-assignments` が global で使える状態か確認する。無ければ、上の approval template に沿って説明し、承認を待ってから https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments を使って global に追加する。
+7. `session-retrospective` が global で使える状態か確認する。無ければ、上の approval template に沿って説明し、承認を待ってから https://github.com/teramotodaiki/vibescool-skills/tree/main/session-retrospective を使って global に追加する。
 8. `vibescool setup` を実行する。
 9. `cwd/.vibescool/ASSIGNMENT.md` がそろっていることを確認する。
 10. global の `vibescool-assignments` を開く。
