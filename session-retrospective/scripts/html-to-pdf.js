@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
-const { existsSync, mkdirSync } = require("node:fs");
+const { existsSync, mkdirSync, mkdtempSync, rmSync } = require("node:fs");
 const { execFileSync } = require("node:child_process");
 const { delimiter, dirname, join, resolve } = require("node:path");
+const { tmpdir } = require("node:os");
 
 function parseArgs(argv) {
   const options = {
@@ -128,13 +129,18 @@ function resolveBrowserPath(explicitChromePath) {
 }
 
 function renderPdfWithBrowser(browserPath, htmlPath, pdfPath) {
+  const userDataDir = mkdtempSync(join(tmpdir(), "session-retro-chrome-"));
   const args = [
     "--headless=new",
     "--disable-gpu",
     "--no-first-run",
     "--no-default-browser-check",
+    "--disable-extensions",
+    "--disable-background-networking",
+    "--disable-sync",
     "--allow-file-access-from-files",
     "--no-pdf-header-footer",
+    `--user-data-dir=${userDataDir}`,
     `--print-to-pdf=${pdfPath}`,
     `file://${htmlPath}`,
   ];
@@ -142,6 +148,7 @@ function renderPdfWithBrowser(browserPath, htmlPath, pdfPath) {
   try {
     execFileSync(browserPath, args, {
       stdio: "pipe",
+      timeout: 30000,
     });
   } catch (error) {
     const stderr =
@@ -153,7 +160,12 @@ function renderPdfWithBrowser(browserPath, htmlPath, pdfPath) {
         ? String(error.stdout)
         : "";
     const detail = stderr.trim() || stdout.trim() || (error instanceof Error ? error.message : String(error));
+    if (existsSync(pdfPath)) {
+      return;
+    }
     throw new Error(`failed to render PDF with ${browserPath}: ${detail}`);
+  } finally {
+    rmSync(userDataDir, { recursive: true, force: true });
   }
 
   if (!existsSync(pdfPath)) {
