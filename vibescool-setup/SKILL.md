@@ -25,8 +25,9 @@ metadata:
 - `今から <名前> をインストールします。` と言った直後に先へ進むのは禁止。説明を出したら一度止まり、承認が来るまで待つ。
 - すでに必要条件を満たしているソフトウェアは、再 install しない。
 - `npm` で install する package は常に latest を使う。
+- global の配布スキルを確認したり追加したりするときは、必ず system の `skill-installer` を使う。`~/.codex/skills` や `/Users/.../.codex/skills` のような固定パスを直接見に行って判定してはならない。
 - setup 中は題材決めや作品の実装に入らず、環境を整えることだけに集中する。
-- `vibescool setup` 実行後は、global の `vibescool-assignments` を開き、そのルールを優先して会話を続ける。
+- `vibescool setup` 実行後は、`vibescool-assignments` の内容を開き、そのルールを優先して会話を続ける。
 
 # Install approval template
 
@@ -52,11 +53,11 @@ metadata:
 3. `Node.js` または `npm` が不足している場合は、上の approval template に沿って説明し、承認を待ってから対応する。自動 install が難しい環境なら、不足内容と次の操作をやさしく伝えて止まる。
 4. `vibescool --version` を確認し、必要なら上の approval template に沿って説明し、承認を待ってから `npm install -g vibescool-cli@latest` を実行する。
 5. `agent-browser --version` を確認し、必要なら上の approval template に沿って説明し、承認を待ってから `npm install -g agent-browser@latest` を実行する。
-6. `vibescool-assignments` が global で使える状態か確認する。無ければ、上の approval template に沿って説明し、承認を待ってから https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments を使って global に追加する。
-7. `session-retrospective` が global で使える状態か確認する。無ければ、上の approval template に沿って説明し、承認を待ってから https://github.com/teramotodaiki/vibescool-skills/tree/main/session-retrospective を使って global に追加する。
+6. `vibescool-assignments` が global で使える状態か、system の `skill-installer` を使って確認する。無ければ、上の approval template に沿って説明し、承認を待ってから https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments を使って global に追加する。
+7. `session-retrospective` が global で使える状態か、system の `skill-installer` を使って確認する。無ければ、上の approval template に沿って説明し、承認を待ってから https://github.com/teramotodaiki/vibescool-skills/tree/main/session-retrospective を使って global に追加する。
 8. `vibescool setup` を実行する。
 9. `cwd/.vibescool/ASSIGNMENT.md` がそろっていることを確認する。
-10. global の `vibescool-assignments` を開く。
+10. https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments を開き、そのルールを読む。
 11. 準備完了を短く伝え、そのまま何を作りたいかを聞く。
 
 # Completion criteria
