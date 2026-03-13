@@ -20,6 +20,9 @@ metadata:
   - 受講者が押すボタンや確認の画面など、その install で必要な操作だけを先に説明する
   - 分からないことがあれば何でも聞いてよいと伝える
   - 最後を `インストールしてもよいですか？` で終える
+- `vibescool login` を実行する前も、install 前と同じように説明だけを先に送り、その場で止まって明確な承認を待つ。
+- login 前の説明では、何のためのログインか、ブラウザや確認画面で必要な操作は何か、分からないことがあれば何でも聞いてよいことを日本語で先に伝える。
+- `今からログインします。` と言った直後に先へ進むのは禁止。説明を出したら一度止まり、承認が来るまで待つ。
 - 難しい技術用語やカタカナ語はできるだけ避ける。避けにくい語は、すぐ後ろで短く説明する。
 - 管理者権限の確認が出る可能性が高いと判断できる install のときだけ、その対応を説明する。毎回機械的に同じ注意文を入れてはならない。
 - `今から <名前> をインストールします。` と言った直後に先へ進むのは禁止。説明を出したら一度止まり、承認が来るまで待つ。
@@ -52,17 +55,19 @@ metadata:
 2. `node --version` と `npm --version` を確認する。
 3. `Node.js` または `npm` が不足している場合は、上の approval template に沿って説明し、承認を待ってから対応する。自動 install が難しい環境なら、不足内容と次の操作をやさしく伝えて止まる。
 4. `vibescool --version` を確認し、必要なら上の approval template に沿って説明し、承認を待ってから `npm install -g vibescool-cli@latest` を実行する。
-5. `agent-browser --version` を確認し、必要なら上の approval template に沿って説明し、承認を待ってから `npm install -g agent-browser@latest` を実行する。
-6. `vibescool-assignments` が global で使える状態か、system の `skill-installer` を使って確認する。無ければ、上の approval template に沿って説明し、承認を待ってから https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments を使って global に追加する。
-7. `session-retrospective` が global で使える状態か、system の `skill-installer` を使って確認する。無ければ、上の approval template に沿って説明し、承認を待ってから https://github.com/teramotodaiki/vibescool-skills/tree/main/session-retrospective を使って global に追加する。
-8. `vibescool setup` を実行する。
-9. `cwd/.vibescool/ASSIGNMENT.md` がそろっていることを確認する。
-10. https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments を開き、そのルールを読む。
-11. 準備完了を短く伝え、そのまま何を作りたいかを聞く。
+5. `vibescool credit --output json` など、ログインが必要な読み取り command で現在のログイン状態を確認する。未ログインまたは期限切れなら、login 前の説明を送り、承認を待ってから `vibescool login` を実行する。
+6. `agent-browser --version` を確認し、必要なら上の approval template に沿って説明し、承認を待ってから `npm install -g agent-browser@latest` を実行する。
+7. `vibescool-assignments` が global で使える状態か、system の `skill-installer` を使って確認する。無ければ、上の approval template に沿って説明し、承認を待ってから https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments を使って global に追加する。
+8. `session-retrospective` が global で使える状態か、system の `skill-installer` を使って確認する。無ければ、上の approval template に沿って説明し、承認を待ってから https://github.com/teramotodaiki/vibescool-skills/tree/main/session-retrospective を使って global に追加する。
+9. `vibescool setup` を実行する。
+10. `cwd/.vibescool/ASSIGNMENT.md` がそろっていることを確認する。
+11. https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments を開き、そのルールを読む。
+12. 準備完了を短く伝え、そのまま何を作りたいかを聞く。
 
 # Completion criteria
 
 - `vibescool-cli` と `agent-browser` が必要に応じて使える状態になっている。
+- `vibescool-cli` のログインが完了し、公開前に必要な準備が先に済んでいる。
 - `vibescool-assignments` と `session-retrospective` が global で使える状態になっている。
 - `vibescool setup` が完了し、`.vibescool/ASSIGNMENT.md` が作業ルートにそろっている。
 - 以後の会話が `vibescool-assignments` のルールで続けられる。
