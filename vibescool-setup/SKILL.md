@@ -13,13 +13,14 @@ metadata:
 # Hard rules
 
 - ソフトや global skill を新しく入れる前、または更新する前は、必ず説明だけを先に送り、その場で止まって明確な承認を待つ。承認前に install command を実行してはならない。
-- install 前の説明は、毎回 1 つずつ、日本語で次を必ず含める。
-  - 何を install するのか
+- `npm` package と global の配布スキルは、足りないものを先に全部洗い出し、まとめて 1 回で承認を取る。見つけるたびに 1 件ずつ承認を取り直してはならない。
+- まとめ承認の説明では、追加や更新が必要なものをすべて列挙し、日本語で次を必ず含める。
+  - 何を入れるのか
   - 名前の読み方をカタカナで添える
-  - 何のために必要かを、やさしい言い方で説明する
-  - 受講者が押すボタンや確認の画面など、その install で必要な操作だけを先に説明する
+  - それぞれ何のために必要かを、やさしい言い方で説明する
+  - 受講者が押すボタンや確認の画面など、その install や追加で必要な操作だけを先に説明する
   - 分からないことがあれば何でも聞いてよいと伝える
-  - 最後を `インストールしてもよいですか？` で終える
+  - 最後を `まとめて準備してもよいですか？` で終える
 - `vibescool login` を実行する前も、install 前と同じように説明だけを先に送り、その場で止まって明確な承認を待つ。
 - login 前の説明では、何のためのログインか、ブラウザや確認画面で必要な操作は何か、分からないことがあれば何でも聞いてよいことを日本語で先に伝える。
 - `今からログインします。` と言った直後に先へ進むのは禁止。説明を出したら一度止まり、承認が来るまで待つ。
@@ -32,37 +33,39 @@ metadata:
 - setup 中は題材決めや作品の実装に入らず、環境を整えることだけに集中する。
 - `vibescool setup` 実行後は、`vibescool-assignments` の内容を開き、そのルールを優先して会話を続ける。
 
-# Install approval template
+# Setup approval template
 
-- install 前の説明は、次の形を基本にする。
+- `npm` package や global の配布スキルをまとめて準備するときは、次の形を基本にする。
 
 ```text
-今から `Node.js` （ノード）というソフトをインストールします。
-アプリを作るために必要な、無料のソフトです。
+今から次のものをまとめて準備します。
+- `vibescool-cli` （バイブスクール シーエルアイ）: 課題の準備や公開に使います。
+- `agent-browser` （エージェント ブラウザー）: 公開した画面が正しく見えるか確かめるのに使います。
+- `vibescool-assignments` （バイブスクール アサインメンツ）: 課題を進めるための案内です。
+- `session-retrospective` （セッション レトロスペクティブ）: 最後のふりかえりに使います。
 このあと確認の画面が出たら、進めるほうのボタンを押してください。たとえば「はい」や「許可」です。
 なにか分からないことがあれば、何でも聞いてください。
 
-インストールしてもよいですか？
+まとめて準備してもよいですか？
 ```
 
-- 実際の名前と説明は、その都度対象に合わせて言い換える。
-- 管理者権限の確認が出そうな install のときだけ、たとえば `パソコンから確認の画面が出たら、「はい」を押してください。` のように操作を足す。
+- 実際の対象一覧と説明は、その都度不足分だけに合わせて言い換える。
+- 管理者権限の確認が出そうな install が含まれるときだけ、たとえば `パソコンから確認の画面が出たら、「はい」を押してください。` のように操作を足す。
 - 返事が来るまでは待つ。承認がないまま次の install や次の作業へ進まない。
 
 # Workflow
 
 1. 現在の `cwd` を作業ルートとして確認する。
 2. `node --version` と `npm --version` を確認する。
-3. `Node.js` または `npm` が不足している場合は、上の approval template に沿って説明し、承認を待ってから対応する。自動 install が難しい環境なら、不足内容と次の操作をやさしく伝えて止まる。
-4. `vibescool --version` を確認し、必要なら上の approval template に沿って説明し、承認を待ってから `npm install -g vibescool-cli@latest` を実行する。
-5. `vibescool credit --output json` など、ログインが必要な読み取り command で現在のログイン状態を確認する。未ログインまたは期限切れなら、login 前の説明を送り、承認を待ってから `vibescool login` を実行する。
-6. `agent-browser --version` を確認し、必要なら上の approval template に沿って説明し、承認を待ってから `npm install -g agent-browser@latest` を実行する。
-7. `vibescool-assignments` が global で使える状態か、system の `skill-installer` を使って確認する。無ければ、上の approval template に沿って説明し、承認を待ってから https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments を使って global に追加する。
-8. `session-retrospective` が global で使える状態か、system の `skill-installer` を使って確認する。無ければ、上の approval template に沿って説明し、承認を待ってから https://github.com/teramotodaiki/vibescool-skills/tree/main/session-retrospective を使って global に追加する。
-9. `vibescool setup` を実行する。
-10. `cwd/.vibescool/ASSIGNMENT.md` がそろっていることを確認する。
-11. https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments を開き、そのルールを読む。
-12. 準備完了を短く伝え、そのまま何を作りたいかを聞く。
+3. `Node.js` または `npm` が不足している場合は、その不足だけをやさしく説明し、承認を待ってから対応する。自動 install が難しい環境なら、不足内容と次の操作をやさしく伝えて止まる。
+4. `vibescool --version`、`agent-browser --version`、`vibescool-assignments` の global 利用可否、`session-retrospective` の global 利用可否を確認し、追加や更新が必要なものを一覧化する。
+5. 4 で不足が 1 つ以上あった場合は、上の setup approval template に沿って不足分をまとめて説明し、承認を 1 回だけ待つ。
+6. 5 の承認後、必要な `npm install -g ...@latest` と global の配布スキル追加を順に実行する。途中で新しい承認は挟まない。
+7. `vibescool credit --output json` など、ログインが必要な読み取り command で現在のログイン状態を確認する。未ログインまたは期限切れなら、login 前の説明を送り、承認を待ってから `vibescool login` を実行する。
+8. `vibescool setup` を実行する。
+9. `cwd/.vibescool/ASSIGNMENT.md` がそろっていることを確認する。
+10. https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments を開き、そのルールを読む。
+11. 準備完了を短く伝え、そのまま何を作りたいかを聞く。
 
 # Completion criteria
 
