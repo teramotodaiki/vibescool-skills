@@ -27,6 +27,7 @@ metadata:
 - 難しい技術用語やカタカナ語はできるだけ避ける。避けにくい語は、すぐ後ろで短く説明する。
 - 管理者権限の確認が出る可能性が高いと判断できる install のときだけ、その対応を説明する。毎回機械的に同じ注意文を入れてはならない。
 - `今から <名前> をインストールします。` と言った直後に先へ進むのは禁止。説明を出したら一度止まり、承認が来るまで待つ。
+- Windows で日本語の Markdown や配布スキルを読むときは、既定の `Get-Content` をそのまま使わない。`-Encoding utf8` を明示するか `cmd /c type` を使い、文字化けしても即座にファイル破損と判断しない。
 - すでに必要条件を満たしているソフトウェアは、再 install しない。
 - `npm` で install する package は常に latest を使う。
 - global の配布スキルを確認したり追加したりするときは、必ず system の `skill-installer` を使う。`~/.codex/skills` や `/Users/.../.codex/skills` のような固定パスを直接見に行って判定してはならない。
@@ -58,7 +59,7 @@ metadata:
 1. 現在の `cwd` を作業ルートとして確認する。
 2. `node --version` と `npm --version` を確認する。
 3. `Node.js` または `npm` が不足している場合は、その不足だけをやさしく説明し、承認を待ってから対応する。自動 install が難しい環境なら、不足内容と次の操作をやさしく伝えて止まる。
-4. `vibescool --version`、`agent-browser --version`、`vibescool-assignments` の global 利用可否、`session-retrospective` の global 利用可否を確認し、追加や更新が必要なものを一覧化する。
+4. `vibescool describe --output json`、`agent-browser --version`、`vibescool-assignments` の global 利用可否、`session-retrospective` の global 利用可否を確認し、追加や更新が必要なものを一覧化する。
 5. 4 で不足が 1 つ以上あった場合は、上の setup approval template に沿って不足分をまとめて説明し、承認を 1 回だけ待つ。
 6. 5 の承認後、必要な `npm install -g ...@latest` と global の配布スキル追加を順に実行する。途中で新しい承認は挟まない。
 7. `vibescool credit --output json` など、ログインが必要な読み取り command で現在のログイン状態を確認する。未ログインまたは期限切れなら、login 前の説明を送り、承認を待ってから `vibescool login` を実行する。

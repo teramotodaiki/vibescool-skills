@@ -16,3 +16,4 @@
 - `ASSIGNMENT.md` に `agent-browser` 検証がある場合、`agent-browser` 実行ログを必ず残す。`curl` のみで代替しない。
 - deploy 後は、公開 URL を `agent-browser` で実表示確認するまで完了報告しない。
 - deploy 後は、公開 URL を開くだけでなく、主要な 1 操作まで `agent-browser` で実行して結果を確認する。`curl` / HEAD / HTML取得だけで「ボタンが動いた」と断定しない。
+- クリック後の状態確認は逐次で行う。`click` と DOM 読み取りやスクリーンショットを同時に投げず、必要なら短く `wait` してから結果を読む。

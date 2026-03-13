@@ -4,11 +4,13 @@ const { existsSync, mkdirSync, mkdtempSync, rmSync } = require("node:fs");
 const { execFileSync } = require("node:child_process");
 const { delimiter, dirname, join, resolve } = require("node:path");
 const { tmpdir } = require("node:os");
+const { pathToFileURL } = require("node:url");
 
 function parseArgs(argv) {
   const options = {
     htmlPath: "",
     pdfPath: "",
+    pngPath: "",
     chromePath: "",
   };
 
@@ -38,6 +40,15 @@ function parseArgs(argv) {
         throw new Error("missing value for --chrome-path");
       }
       options.chromePath = value;
+      index += 1;
+      continue;
+    }
+    if (arg === "--png") {
+      const value = argv[index + 1];
+      if (!value) {
+        throw new Error("missing value for --png");
+      }
+      options.pngPath = value;
       index += 1;
       continue;
     }
@@ -128,25 +139,12 @@ function resolveBrowserPath(explicitChromePath) {
   );
 }
 
-function renderPdfWithBrowser(browserPath, htmlPath, pdfPath) {
+function runBrowser(browserPath, args, outputPath, purpose) {
   const userDataDir = mkdtempSync(join(tmpdir(), "session-retro-chrome-"));
-  const args = [
-    "--headless=new",
-    "--disable-gpu",
-    "--no-first-run",
-    "--no-default-browser-check",
-    "--disable-extensions",
-    "--disable-background-networking",
-    "--disable-sync",
-    "--allow-file-access-from-files",
-    "--no-pdf-header-footer",
-    `--user-data-dir=${userDataDir}`,
-    `--print-to-pdf=${pdfPath}`,
-    `file://${htmlPath}`,
-  ];
+  const fullArgs = [`--user-data-dir=${userDataDir}`, ...args];
 
   try {
-    execFileSync(browserPath, args, {
+    execFileSync(browserPath, fullArgs, {
       stdio: "pipe",
       timeout: 30000,
     });
@@ -160,23 +158,68 @@ function renderPdfWithBrowser(browserPath, htmlPath, pdfPath) {
         ? String(error.stdout)
         : "";
     const detail = stderr.trim() || stdout.trim() || (error instanceof Error ? error.message : String(error));
-    if (existsSync(pdfPath)) {
+    if (existsSync(outputPath)) {
       return;
     }
-    throw new Error(`failed to render PDF with ${browserPath}: ${detail}`);
+    throw new Error(`failed to render ${purpose} with ${browserPath}: ${detail}`);
   } finally {
     rmSync(userDataDir, { recursive: true, force: true });
   }
 
-  if (!existsSync(pdfPath)) {
-    throw new Error(`pdf was not created: ${pdfPath}`);
+  if (!existsSync(outputPath)) {
+    throw new Error(`${purpose} was not created: ${outputPath}`);
   }
+}
+
+function renderPdfWithBrowser(browserPath, htmlPath, pdfPath) {
+  runBrowser(
+    browserPath,
+    [
+      "--headless=new",
+      "--disable-gpu",
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-extensions",
+      "--disable-background-networking",
+      "--disable-sync",
+      "--allow-file-access-from-files",
+      "--no-pdf-header-footer",
+      `--print-to-pdf=${pdfPath}`,
+      pathToFileURL(htmlPath).href,
+    ],
+    pdfPath,
+    "PDF"
+  );
+}
+
+function renderPngWithBrowser(browserPath, htmlPath, pngPath) {
+  runBrowser(
+    browserPath,
+    [
+      "--headless=new",
+      "--disable-gpu",
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-extensions",
+      "--disable-background-networking",
+      "--disable-sync",
+      "--allow-file-access-from-files",
+      "--hide-scrollbars",
+      "--force-device-scale-factor=2",
+      "--window-size=1240,1754",
+      `--screenshot=${pngPath}`,
+      pathToFileURL(htmlPath).href,
+    ],
+    pngPath,
+    "PNG"
+  );
 }
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const htmlPath = resolve(options.htmlPath);
   const pdfPath = resolve(options.pdfPath);
+  const pngPath = options.pngPath ? resolve(options.pngPath) : "";
   const browserPath = resolveBrowserPath(options.chromePath);
 
   if (!existsSync(htmlPath)) {
@@ -185,8 +228,15 @@ async function main() {
 
   mkdirSync(dirname(pdfPath), { recursive: true });
   renderPdfWithBrowser(browserPath, htmlPath, pdfPath);
+  if (pngPath) {
+    mkdirSync(dirname(pngPath), { recursive: true });
+    renderPngWithBrowser(browserPath, htmlPath, pngPath);
+  }
 
   process.stdout.write(`${pdfPath}\n`);
+  if (pngPath) {
+    process.stdout.write(`${pngPath}\n`);
+  }
 }
 
 main().catch((error) => {
