@@ -2,6 +2,7 @@
 
 - QRコードはローカル生成のみ。`api.qrserver.com` などの外部サイト / 外部APIで生成しない。
 - 生成コマンドは `npx -y qrcode@latest -t png -o <ASCII-only-file-path> "<公開URL>"` に固定する。
+- `command -v qrencode` や `python qrcode` の有無確認を含む探索をしない。最初から上の固定コマンドだけを実行する。
 - `qrencode` / `python qrcode` / `qrcode-terminal` など、OS 依存や画像未生成になりうる分岐を作らない。
 - QRコード画像のファイル名は ASCII のみを使う。例: `public-url-qr.png`
 - 最終回答へ埋め込む前に、QRコード画像パスは絶対ファイルパスへ解決する。相対パスは不可。

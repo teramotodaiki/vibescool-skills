@@ -36,6 +36,8 @@ metadata:
 - `ASSIGNMENT.md` に「最後に質問する項目」がある場合、最終回答で必ず質問する。固定フレーズを強制しない。
 - 最終回答では URL をバッククォートで囲まない。URLを含むインラインコードやコードブロックも使わない。
 - `ASSIGNMENT.md` に QRコード提示要件がある場合、最終回答では QRコード画像を Markdown 画像埋め込み（`![alt](path)`）で提示する。通常リンク（`[text](path)`）は不可。
+- `ASSIGNMENT.md` に QRコード提示要件がある場合、QRコード生成は `npx -y qrcode@latest -t png -o <ASCII-only-file-path> "<公開URL>"` の 1 コマンドに固定する。探索や分岐は作らない。
+- `ASSIGNMENT.md` に QRコード提示要件がある場合、`command -v qrencode`、`python qrcode` 確認、`qrcode-terminal`、外部QR生成サイト / API へのフォールバックをしない。
 - 最終回答では URL をプレーンテキストまたは通常リンクで提示する。QRコード提示が必要な場合は Markdown 画像埋め込みで提示する。
 - 最終回答の末尾で、受講者に次の改善点を必ず確認する（固定フレーズで機械的にしない）。この質問は最終回答でのみ行う。
 - 会話全体を通して、受講者を三人称（`受講者` / `受講生` など）で呼ばない。呼称は固定しない。
