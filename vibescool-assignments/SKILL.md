@@ -19,7 +19,7 @@ metadata:
 # Load references when needed
 
 - 公開がありうる課題、または `ASSIGNMENT.md` に `agent-browser` 検証や公開 URL の表示確認がある課題では、最初に `references/browser.md` を開く。
-- 公開が必要な課題では、最初の `vibescool deploy` 前に `references/deploy.md` を開く。
+- 公開が必要な課題、または `vibescool resume` が必要になった課題では、最初の `vibescool deploy` または `vibescool resume` の前に `references/deploy.md` を開く。
 - QRコード提示要件がある課題では、最終回答前に `references/qr.md` を開く。
 
 # Hard rules
@@ -44,6 +44,7 @@ metadata:
 - 受講者が明示的に求めない限り、ローカル開発手順（例: `npm run dev`, `localhost`, `Ctrl + C`）を案内したり、自分でローカルサーバーを起動したりしない。
 - 公開後の表示確認は `agent-browser` を使う。`curl` / HEAD リクエスト / ステータスコード確認だけで、画面表示や主要操作の確認を済ませたことにしない。
 - 公開URLを提示した後は、スマホでの利用手順（URLを開く / ホーム画面に追加 / 起動確認）だけを案内する。
+- このセッションでまだ credit の料金体系を説明していない場合、初回の `vibescool deploy` または `vibescool resume` の前に `references/deploy.md` を開き、credit 消費ルールと残高確認方法を短く説明してから進む。
 
 # Required constraints in ASSIGNMENT.md
 
