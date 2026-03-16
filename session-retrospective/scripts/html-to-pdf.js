@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 
 const { existsSync, mkdirSync, mkdtempSync, rmSync } = require("node:fs");
-const { execFileSync } = require("node:child_process");
+const { execFileSync, spawn } = require("node:child_process");
 const { delimiter, dirname, join, resolve } = require("node:path");
 const { tmpdir } = require("node:os");
+const { setTimeout: delay } = require("node:timers/promises");
 const { pathToFileURL } = require("node:url");
+
+const RENDER_TIMEOUT_MS = 30000;
+const EXIT_TIMEOUT_MS = 5000;
+const POLL_INTERVAL_MS = 200;
 
 function parseArgs(argv) {
   const options = {
@@ -139,40 +144,182 @@ function resolveBrowserPath(explicitChromePath) {
   );
 }
 
-function runBrowser(browserPath, args, outputPath, purpose) {
-  const userDataDir = mkdtempSync(join(tmpdir(), "session-retro-chrome-"));
-  const fullArgs = [`--user-data-dir=${userDataDir}`, ...args];
+function formatChildDetail(stdout, stderr, fallback) {
+  const detail = stderr.trim() || stdout.trim() || fallback;
+  return detail || "unknown error";
+}
+
+function isProcessMissing(error) {
+  return Boolean(error && typeof error === "object" && "code" in error && error.code === "ESRCH");
+}
+
+function terminateProcessTree(child, force) {
+  if (!child || !child.pid || child.exitCode !== null || child.signalCode !== null) {
+    return;
+  }
 
   try {
-    execFileSync(browserPath, fullArgs, {
-      stdio: "pipe",
-      timeout: 30000,
-    });
-  } catch (error) {
-    const stderr =
-      error && typeof error === "object" && "stderr" in error && error.stderr
-        ? String(error.stderr)
-        : "";
-    const stdout =
-      error && typeof error === "object" && "stdout" in error && error.stdout
-        ? String(error.stdout)
-        : "";
-    const detail = stderr.trim() || stdout.trim() || (error instanceof Error ? error.message : String(error));
-    if (existsSync(outputPath)) {
+    if (process.platform === "win32") {
+      const args = ["/PID", String(child.pid), "/T"];
+      if (force) {
+        args.push("/F");
+      }
+      execFileSync("taskkill", args, { stdio: "ignore" });
       return;
     }
-    throw new Error(`failed to render ${purpose} with ${browserPath}: ${detail}`);
+
+    process.kill(-child.pid, force ? "SIGKILL" : "SIGTERM");
+  } catch (error) {
+    if (isProcessMissing(error)) {
+      return;
+    }
+    throw error;
+  }
+}
+
+function waitForChildExit(child, timeoutMs) {
+  if (!child || child.exitCode !== null || child.signalCode !== null) {
+    return Promise.resolve({
+      code: child?.exitCode ?? null,
+      signal: child?.signalCode ?? null,
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error(`browser process did not exit within ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    const onExit = (code, signal) => {
+      cleanup();
+      resolve({ code, signal });
+    };
+
+    const onError = (error) => {
+      cleanup();
+      reject(error);
+    };
+
+    const cleanup = () => {
+      clearTimeout(timeout);
+      child.off("exit", onExit);
+      child.off("error", onError);
+    };
+
+    child.once("exit", onExit);
+    child.once("error", onError);
+  });
+}
+
+async function ensureBrowserStopped(child) {
+  if (!child || child.exitCode !== null || child.signalCode !== null) {
+    return;
+  }
+
+  try {
+    terminateProcessTree(child, false);
+    await waitForChildExit(child, EXIT_TIMEOUT_MS);
+  } catch (error) {
+    terminateProcessTree(child, true);
+    await waitForChildExit(child, EXIT_TIMEOUT_MS);
+  }
+}
+
+async function waitForOutputOrExit(child, outputPath, spawnErrorRef) {
+  const deadline = Date.now() + RENDER_TIMEOUT_MS;
+
+  while (Date.now() < deadline) {
+    if (existsSync(outputPath)) {
+      return "output";
+    }
+    if (spawnErrorRef.current) {
+      throw spawnErrorRef.current;
+    }
+    if (child.exitCode !== null || child.signalCode !== null) {
+      return "exit";
+    }
+    await delay(POLL_INTERVAL_MS);
+  }
+
+  if (existsSync(outputPath)) {
+    return "output";
+  }
+  return "timeout";
+}
+
+async function runBrowser(browserPath, args, outputPath, purpose) {
+  const userDataDir = mkdtempSync(join(tmpdir(), "session-retro-chrome-"));
+  const fullArgs = [`--user-data-dir=${userDataDir}`, ...args];
+  let child = null;
+  let stdout = "";
+  let stderr = "";
+  let renderError = null;
+  let cleanupError = null;
+
+  try {
+    const spawnErrorRef = { current: null };
+    child = spawn(browserPath, fullArgs, {
+      stdio: ["ignore", "pipe", "pipe"],
+      detached: process.platform !== "win32",
+    });
+
+    child.stdout?.setEncoding("utf8");
+    child.stderr?.setEncoding("utf8");
+    child.stdout?.on("data", (chunk) => {
+      stdout += chunk;
+    });
+    child.stderr?.on("data", (chunk) => {
+      stderr += chunk;
+    });
+    child.once("error", (error) => {
+      spawnErrorRef.current = error;
+    });
+
+    const outcome = await waitForOutputOrExit(child, outputPath, spawnErrorRef);
+    if (outcome === "output") {
+      return;
+    }
+    if (outcome === "timeout") {
+      throw new Error(`timed out waiting for ${purpose} output from ${browserPath}`);
+    }
+    throw new Error(
+      `failed to render ${purpose} with ${browserPath}: ${formatChildDetail(
+        stdout,
+        stderr,
+        `browser exited before creating ${outputPath}`
+      )}`
+    );
+  } catch (error) {
+    renderError =
+      error instanceof Error
+        ? error
+        : new Error(`failed to render ${purpose} with ${browserPath}: ${String(error)}`);
   } finally {
+    try {
+      await ensureBrowserStopped(child);
+    } catch (error) {
+      cleanupError = error instanceof Error ? error : new Error(String(error));
+    }
     rmSync(userDataDir, { recursive: true, force: true });
   }
 
+  if (renderError) {
+    if (cleanupError) {
+      throw new Error(`${renderError.message}; cleanup failed: ${cleanupError.message}`);
+    }
+    throw renderError;
+  }
+  if (cleanupError) {
+    throw cleanupError;
+  }
   if (!existsSync(outputPath)) {
     throw new Error(`${purpose} was not created: ${outputPath}`);
   }
 }
 
-function renderPdfWithBrowser(browserPath, htmlPath, pdfPath) {
-  runBrowser(
+async function renderPdfWithBrowser(browserPath, htmlPath, pdfPath) {
+  await runBrowser(
     browserPath,
     [
       "--headless=new",
@@ -192,8 +339,8 @@ function renderPdfWithBrowser(browserPath, htmlPath, pdfPath) {
   );
 }
 
-function renderPngWithBrowser(browserPath, htmlPath, pngPath) {
-  runBrowser(
+async function renderPngWithBrowser(browserPath, htmlPath, pngPath) {
+  await runBrowser(
     browserPath,
     [
       "--headless=new",
@@ -227,10 +374,10 @@ async function main() {
   }
 
   mkdirSync(dirname(pdfPath), { recursive: true });
-  renderPdfWithBrowser(browserPath, htmlPath, pdfPath);
+  await renderPdfWithBrowser(browserPath, htmlPath, pdfPath);
   if (pngPath) {
     mkdirSync(dirname(pngPath), { recursive: true });
-    renderPngWithBrowser(browserPath, htmlPath, pngPath);
+    await renderPngWithBrowser(browserPath, htmlPath, pngPath);
   }
 
   process.stdout.write(`${pdfPath}\n`);
