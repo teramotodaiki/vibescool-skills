@@ -33,7 +33,7 @@ metadata:
 - global の配布スキルを確認したり追加したりするときは、必ず system の `skill-installer` を使う。`~/.codex/skills` や `/Users/.../.codex/skills` のような固定パスを直接見に行って判定してはならない。
 - setup 中は題材決めや作品の実装に入らず、環境を整えることだけに集中する。
 - `cwd/AGENTS.md` がすでに存在する場合は、絶対に上書きしない。新しい講義用フォルダを作るよう短く伝えて止まる。
-- week 1 の課題AGENTSの正本は https://vibescool.jp/assignments/week-1.md。local template や別名ファイルを正本にしない。
+- week 1 の課題AGENTSの正本は https://vibescool.jp/assignments/week-1/AGENTS.md。local template や別名ファイルを正本にしない。
 
 # Setup approval template
 
@@ -65,7 +65,7 @@ metadata:
 6. 5 の承認後、必要な `npm install -g ...@latest` と global の配布スキル追加を順に実行する。途中で新しい承認は挟まない。
 7. `vibescool credit --output json` など、ログインが必要な読み取り command で現在のログイン状態を確認する。未ログインまたは期限切れなら、login 前の説明を送り、承認を待ってから `vibescool login` を実行する。
 8. `cwd/AGENTS.md` が存在しないことを確認する。存在したら上書きせず、新しい講義用フォルダを作るよう短く伝えて止まる。
-9. https://vibescool.jp/assignments/week-1.md を開く。
+9. https://vibescool.jp/assignments/week-1/AGENTS.md を読む。
 10. その内容を `cwd/AGENTS.md` に UTF-8 で保存する。
 11. `cwd/AGENTS.md` がそろっていることを確認する。
 12. 準備完了を短く伝え、そのまま何を作りたいかを聞く。
@@ -75,5 +75,5 @@ metadata:
 - `vibescool-cli` と `agent-browser` が必要に応じて使える状態になっている。
 - `vibescool-cli` のログインが完了し、公開前に必要な準備が先に済んでいる。
 - `vibescool-assignments` と `session-retrospective` が global で使える状態になっている。
-- week 1 の正本 https://vibescool.jp/assignments/week-1.md から `AGENTS.md` が作業ルートにそろっている。
+- week 1 の正本 https://vibescool.jp/assignments/week-1/AGENTS.md から `AGENTS.md` が作業ルートにそろっている。
 - 以後の会話が課題AGENTSのルールで続けられる。

@@ -6,9 +6,9 @@ Public distribution repo for VibesCool Codex skills.
 
 配布先:
 
-- vibescool-setup: https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-setup
-- vibescool-assignments: https://github.com/teramotodaiki/vibescool-skills/tree/main/vibescool-assignments
-- session-retrospective: https://github.com/teramotodaiki/vibescool-skills/tree/main/session-retrospective
+- vibescool-setup: https://github.com/teramotodaiki/vibescool-skills/blob/main/vibescool-setup/SKILL.md
+- vibescool-assignments: https://github.com/teramotodaiki/vibescool-skills/blob/main/vibescool-assignments/SKILL.md
+- session-retrospective: https://github.com/teramotodaiki/vibescool-skills/blob/main/session-retrospective/SKILL.md
 
 役割:
 
