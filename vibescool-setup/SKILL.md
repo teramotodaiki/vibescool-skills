@@ -69,7 +69,7 @@ metadata:
    `pwd && ls -1 && test -f AGENTS.md; echo $? && node --version && npm --version && command -v vibescool >/dev/null && vibescool describe --output json || echo '__NO_VIBESCOOL__' && command -v agent-browser >/dev/null && agent-browser --version || echo '__NO_AGENT_BROWSER__' && command -v vibescool-assignments >/dev/null && echo '__HAS_ASSIGNMENTS__' || echo '__NO_ASSIGNMENTS__' && command -v vibescool-deploy >/dev/null && echo '__HAS_DEPLOY__' || echo '__NO_DEPLOY__' && command -v session-retrospective >/dev/null && echo '__HAS_RETRO__' || echo '__NO_RETRO__'`
 5. 4 で不足が 1 つ以上あった場合は、上の setup approval template に沿って不足分をまとめて説明し、承認を 1 回だけ待つ。
 6. 5 の承認後、必要な `npm install -g ...@latest` と global の配布スキル追加を順に実行する。途中で新しい承認は挟まない。
-   配布スキルを追加するときは、承認済みの不足分を 1 回の install でまとめて渡す。たとえば 3 つとも不足しているなら、`python3 <skill-installer>/scripts/install-skill-from-github.py --repo teramotodaiki/vibescool-skills --path vibescool-assignments --path vibescool-deploy --path session-retrospective` の形で 1 回で入れる。
+   配布スキルを追加するときは、承認済みの不足分を 1 回の install でまとめて渡す。`--path` は 1 回だけ使い、その後ろに必要な path をまとめて並べる。たとえば 3 つとも不足しているなら、`python3 <skill-installer>/scripts/install-skill-from-github.py --repo teramotodaiki/vibescool-skills --path vibescool-assignments vibescool-deploy session-retrospective` の形で 1 回で入れる。
 7. `vibescool credit --output json` など、ログインが必要な読み取り command で現在のログイン状態を確認する。未ログインまたは期限切れなら、login 前の説明を送り、承認を待ってから `vibescool login` を実行する。
 8. `cwd/AGENTS.md` が存在しないことを確認する。存在したら上書きせず、新しい講義用フォルダを作るよう短く伝えて止まる。
 9. https://vibescool.jp/assignments/week-1/AGENTS.md を読む。
