@@ -31,6 +31,7 @@ metadata:
 - すでに必要条件を満たしているソフトウェアは、再 install しない。
 - `npm` で install する package は常に latest を使う。
 - global の配布スキルを確認したり追加したりするときは、必ず system の `skill-installer` を使う。`~/.codex/skills` や `/Users/.../.codex/skills` のような固定パスを直接見に行って判定してはならない。
+- global の配布スキル確認では、`vibescool-assignments`、`vibescool-deploy`、`session-retrospective` の 3 つを必ず同時に確認する。1 つでも未確認のまま承認説明へ進んではならない。
 - setup 中は題材決めやアプリの実装に入らず、環境を整えることだけに集中する。
 - setup 完了後の課題進行は `vibescool-assignments` を使う。deploy / resume が必要になったら、必ず `vibescool-deploy` を使う。
 - setup 自身が deploy / resume を代行してはならない。deploy 系の作業は `vibescool-deploy` に渡す。
@@ -64,8 +65,11 @@ metadata:
 2. `node --version` と `npm --version` を確認する。
 3. `Node.js` または `npm` が不足している場合は、その不足だけをやさしく説明し、承認を待ってから対応する。自動 install が難しい環境なら、不足内容と次の操作をやさしく伝えて止まる。
 4. `vibescool describe --output json`、`agent-browser --version`、`vibescool-assignments` の global 利用可否、`vibescool-deploy` の global 利用可否、`session-retrospective` の global 利用可否を確認し、追加や更新が必要なものを一覧化する。
+   迷ったら、次の 1 回の確認 command をそのまま使う。
+   `pwd && ls -1 && test -f AGENTS.md; echo $? && node --version && npm --version && command -v vibescool >/dev/null && vibescool describe --output json || echo '__NO_VIBESCOOL__' && command -v agent-browser >/dev/null && agent-browser --version || echo '__NO_AGENT_BROWSER__' && command -v vibescool-assignments >/dev/null && echo '__HAS_ASSIGNMENTS__' || echo '__NO_ASSIGNMENTS__' && command -v vibescool-deploy >/dev/null && echo '__HAS_DEPLOY__' || echo '__NO_DEPLOY__' && command -v session-retrospective >/dev/null && echo '__HAS_RETRO__' || echo '__NO_RETRO__'`
 5. 4 で不足が 1 つ以上あった場合は、上の setup approval template に沿って不足分をまとめて説明し、承認を 1 回だけ待つ。
 6. 5 の承認後、必要な `npm install -g ...@latest` と global の配布スキル追加を順に実行する。途中で新しい承認は挟まない。
+   配布スキルを追加するときは、承認済みの不足分を 1 回の install でまとめて渡す。たとえば 3 つとも不足しているなら、`python3 <skill-installer>/scripts/install-skill-from-github.py --repo teramotodaiki/vibescool-skills --path vibescool-assignments --path vibescool-deploy --path session-retrospective` の形で 1 回で入れる。
 7. `vibescool credit --output json` など、ログインが必要な読み取り command で現在のログイン状態を確認する。未ログインまたは期限切れなら、login 前の説明を送り、承認を待ってから `vibescool login` を実行する。
 8. `cwd/AGENTS.md` が存在しないことを確認する。存在したら上書きせず、新しい講義用フォルダを作るよう短く伝えて止まる。
 9. https://vibescool.jp/assignments/week-1/AGENTS.md を読む。
