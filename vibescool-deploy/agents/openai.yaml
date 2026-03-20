@@ -1,0 +1,4 @@
+interface:
+  display_name: "VibesCool Deploy"
+  short_description: "VibesCoolアプリのdeployと公開後確認を進める"
+  default_prompt: "Use $vibescool-deploy to deploy a VibesCool app and verify it after release."

@@ -8,7 +8,7 @@ metadata:
 # When to use
 
 - 受講開始直後に、いま開いているフォルダを VibesCool の課題ワークスペースとして整えるとき。
-- `vibescool-assignments` を使い始める前に、必要なツールと week 1 の課題AGENTSをそろえるとき。
+- `vibescool-assignments` と `vibescool-deploy` を使い始める前に、必要なツールと week 1 の課題AGENTSをそろえるとき。
 
 # Hard rules
 
@@ -31,7 +31,9 @@ metadata:
 - すでに必要条件を満たしているソフトウェアは、再 install しない。
 - `npm` で install する package は常に latest を使う。
 - global の配布スキルを確認したり追加したりするときは、必ず system の `skill-installer` を使う。`~/.codex/skills` や `/Users/.../.codex/skills` のような固定パスを直接見に行って判定してはならない。
-- setup 中は題材決めや作品の実装に入らず、環境を整えることだけに集中する。
+- setup 中は題材決めやアプリの実装に入らず、環境を整えることだけに集中する。
+- setup 完了後の課題進行は `vibescool-assignments` を使う。deploy / resume が必要になったら、必ず `vibescool-deploy` を使う。
+- setup 自身が deploy / resume を代行してはならない。deploy 系の作業は `vibescool-deploy` に渡す。
 - `cwd/AGENTS.md` がすでに存在する場合は、絶対に上書きしない。新しい講義用フォルダを作るよう短く伝えて止まる。
 - week 1 の課題AGENTSの正本は https://vibescool.jp/assignments/week-1/AGENTS.md。local template や別名ファイルを正本にしない。
 
@@ -44,6 +46,7 @@ metadata:
 - `vibescool-cli` （バイブスクール シーエルアイ）: 課題の準備や公開に使います。
 - `agent-browser` （エージェント ブラウザー）: 公開した画面が正しく見えるか確かめるのに使います。
 - `vibescool-assignments` （バイブスクール アサインメンツ）: 課題を進めるための案内です。
+- `vibescool-deploy` （バイブスクール デプロイ）: アプリを出して、見えるか確かめるための案内です。
 - `session-retrospective` （セッション レトロスペクティブ）: 最後のふりかえりに使います。
 このあと確認の画面が出たら、進めるほうのボタンを押してください。たとえば「はい」や「許可」です。
 なにか分からないことがあれば、何でも聞いてください。
@@ -60,7 +63,7 @@ metadata:
 1. 現在の `cwd` を作業ルートとして確認する。
 2. `node --version` と `npm --version` を確認する。
 3. `Node.js` または `npm` が不足している場合は、その不足だけをやさしく説明し、承認を待ってから対応する。自動 install が難しい環境なら、不足内容と次の操作をやさしく伝えて止まる。
-4. `vibescool describe --output json`、`agent-browser --version`、`vibescool-assignments` の global 利用可否、`session-retrospective` の global 利用可否を確認し、追加や更新が必要なものを一覧化する。
+4. `vibescool describe --output json`、`agent-browser --version`、`vibescool-assignments` の global 利用可否、`vibescool-deploy` の global 利用可否、`session-retrospective` の global 利用可否を確認し、追加や更新が必要なものを一覧化する。
 5. 4 で不足が 1 つ以上あった場合は、上の setup approval template に沿って不足分をまとめて説明し、承認を 1 回だけ待つ。
 6. 5 の承認後、必要な `npm install -g ...@latest` と global の配布スキル追加を順に実行する。途中で新しい承認は挟まない。
 7. `vibescool credit --output json` など、ログインが必要な読み取り command で現在のログイン状態を確認する。未ログインまたは期限切れなら、login 前の説明を送り、承認を待ってから `vibescool login` を実行する。
@@ -68,12 +71,12 @@ metadata:
 9. https://vibescool.jp/assignments/week-1/AGENTS.md を読む。
 10. その内容を `cwd/AGENTS.md` に UTF-8 で保存する。
 11. `cwd/AGENTS.md` がそろっていることを確認する。
-12. 準備完了を短く伝え、そのまま何を作りたいかを聞く。
+12. 準備完了を短く伝え、課題進行は `vibescool-assignments`、deploy / resume は `vibescool-deploy` を使う前提で、そのまま何を作りたいかを聞く。
 
 # Completion criteria
 
 - `vibescool-cli` と `agent-browser` が必要に応じて使える状態になっている。
 - `vibescool-cli` のログインが完了し、公開前に必要な準備が先に済んでいる。
-- `vibescool-assignments` と `session-retrospective` が global で使える状態になっている。
+- `vibescool-assignments`、`vibescool-deploy`、`session-retrospective` が global で使える状態になっている。
 - week 1 の正本 https://vibescool.jp/assignments/week-1/AGENTS.md から `AGENTS.md` が作業ルートにそろっている。
 - 以後の会話が課題AGENTSのルールで続けられる。
