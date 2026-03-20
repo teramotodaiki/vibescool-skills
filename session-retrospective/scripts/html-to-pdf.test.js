@@ -106,3 +106,47 @@ setInterval(() => {}, 1000);
     assert.equal(processExists(pid), false, `browser pid ${pid} should have been cleaned up`);
   }
 });
+
+test("html-to-pdf passes SESSION_RETROSPECTIVE_BROWSER_HOME to the browser process", async () => {
+  const tempDir = mkdtempSync(join(tmpdir(), "session-retro-html-to-pdf-home-test-"));
+  const htmlPath = join(tempDir, "report.html");
+  const pdfPath = join(tempDir, "report.pdf");
+  const pngPath = join(tempDir, "report.png");
+  const browserPath = join(tempDir, "fake-browser.js");
+  const runtimeHome = join(tempDir, "runtime-home");
+  const browserHome = join(tempDir, "browser-home");
+  const homeLogPath = join(tempDir, "browser-home-log.txt");
+
+  writeFileSync(htmlPath, "<!doctype html><title>report</title><body>ok</body>\n", "utf8");
+  writeFileSync(
+    browserPath,
+    `#!/usr/bin/env node
+const { appendFileSync, writeFileSync } = require("node:fs");
+
+const outputArg = process.argv.find((arg) => arg.startsWith("--print-to-pdf=") || arg.startsWith("--screenshot="));
+if (!outputArg) {
+  process.stderr.write("missing output argument\\n");
+  process.exit(2);
+}
+
+const outputPath = outputArg.split("=").slice(1).join("=");
+writeFileSync(outputPath, "rendered\\n", "utf8");
+appendFileSync(process.env.FAKE_BROWSER_HOME_LOG, String(process.env.HOME) + "\\n", "utf8");
+process.exit(0);
+`,
+    "utf8"
+  );
+  chmodSync(browserPath, 0o755);
+
+  await runHtmlToPdf(["--html", htmlPath, "--pdf", pdfPath, "--png", pngPath, "--chrome-path", browserPath], {
+    env: {
+      ...process.env,
+      HOME: runtimeHome,
+      SESSION_RETROSPECTIVE_BROWSER_HOME: browserHome,
+      FAKE_BROWSER_HOME_LOG: homeLogPath,
+    },
+  });
+
+  const homes = readFileSync(homeLogPath, "utf8").trim().split("\n");
+  assert.deepEqual(homes, [browserHome, browserHome]);
+});

@@ -144,6 +144,18 @@ function resolveBrowserPath(explicitChromePath) {
   );
 }
 
+function createBrowserEnv() {
+  const browserHome = process.env.SESSION_RETROSPECTIVE_BROWSER_HOME?.trim();
+  if (!browserHome) {
+    return process.env;
+  }
+
+  return {
+    ...process.env,
+    HOME: resolve(browserHome),
+  };
+}
+
 function formatChildDetail(stdout, stderr, fallback) {
   const detail = stderr.trim() || stdout.trim() || fallback;
   return detail || "unknown error";
@@ -251,6 +263,7 @@ async function waitForOutputOrExit(child, outputPath, spawnErrorRef) {
 async function runBrowser(browserPath, args, outputPath, purpose) {
   const userDataDir = mkdtempSync(join(tmpdir(), "session-retro-chrome-"));
   const fullArgs = [`--user-data-dir=${userDataDir}`, ...args];
+  const browserEnv = createBrowserEnv();
   let child = null;
   let stdout = "";
   let stderr = "";
@@ -260,6 +273,7 @@ async function runBrowser(browserPath, args, outputPath, purpose) {
   try {
     const spawnErrorRef = { current: null };
     child = spawn(browserPath, fullArgs, {
+      env: browserEnv,
       stdio: ["ignore", "pipe", "pipe"],
       detached: process.platform !== "win32",
     });

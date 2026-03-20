@@ -12,7 +12,7 @@ metadata:
 # Preconditions
 
 1. `--codex-home` を省略した場合は `~/.codex`（または `CODEX_HOME`）を使う。
-2. PDF/PNG 出力には Chrome/Chromium/Edge 系の実行ファイルが必要。既知パスと `PATH` から自動検出し、必要なら `--chrome-path` または `CHROME_PATH` で上書きできる。
+2. PDF/PNG 出力には Chrome/Chromium/Edge 系の実行ファイルが必要。既知パスと `PATH` から自動検出し、必要なら `--chrome-path` または `CHROME_PATH` で上書きできる。macOS で実行側が隔離 `HOME` を使っている場合は、browser process 専用に `SESSION_RETROSPECTIVE_BROWSER_HOME` を渡せる。
 3. `bash` や `pdftoppm` は不要。Node から直接実行する。
 4. 対象は Codex の rollout JSONL セッションであること。
 5. `CODEX_THREAD_ID` がある場合は一覧で `[current]` 表示される（選択時の参考情報）。
@@ -45,6 +45,7 @@ node "$SKILL_ROOT/scripts/run-session-retrospective.js" \
 ```
 
 必要なら `--chrome-path "<browser-executable>"` を追加して上書きする。
+macOS で隔離 `HOME` から実行する場合は、必要に応じて `SESSION_RETROSPECTIVE_BROWSER_HOME="<host-home>"` を付けて browser process だけ通常の keychain 文脈で起動する。
 
 一覧から番号選択して作る（`session_id` 不明時のみ）:
 
